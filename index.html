@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>Dashboard | Intelligent Agriculture Greenhouse Environment Monitoring & Controlling Based on
+        LoRa Technology</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css"
+        integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.5.3/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.8/dist/sweetalert2.all.min.js"
+        integrity="sha256-MlrZ8a1LrI3zM5T1y+sdLnorLQup57yD+J/rZZTn1R0=" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-app-bar app>
+                <v-toolbar-title>Dashboard | Green House - Crop Data Report</v-toolbar-title>
+            </v-app-bar>
+
+            <v-main class="grey lighten-3">
+                <v-container>
+                    <v-row>
+                        <v-col cols="12" sm="12" md="3">
+                            <v-card min-height="50vh" rounded="lg">
+                                <v-form ref="form">
+                                    <br />
+                                    <div class="ml-4 mr-4">
+                                        <h4>Select Crop</h4>
+                                        <v-select solo ref="refcrop" v-model="crop" :items="croplist" attach chips
+                                            label="-----List of Crop-----">
+                                        </v-select>
+                                    </div>
+                                    <div v-if="crop" class="ml-4 mr-4">
+                                        <v-btn @click="dataret" color="success" large block>
+                                            Fetch Data
+                                        </v-btn>
+                                    </div>
+                                </v-form>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="4">
+                            <v-card min-height="50vh" rounded="lg">
+                                <br />
+                                <div class="ml-4 mr-4">
+                                    <div v-if="crop">
+                                        <h4>{{crop}} - Data Report</h4>
+
+                                        <v-divider></v-divider>
+                                        <v-simple-table fixed-header height="100px">
+                                            <template v-slot:default>
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-left">
+                                                            Temperature
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Humidity
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Light Intensity
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Soil Moisture
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="item in dataretvi" :key="item.humidity">
+                                                        <td>{{ item.temperature }}</td>
+                                                        <td>{{ item.humidity }}</td>
+                                                        <td>{{ item.light_intensity }}</td>
+                                                        <td>{{ item.soil_moisture }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
+                                    </div>
+                                    <div v-if="crop">
+                                        <h4>Our Sensor - Data Report</h4>
+
+                                        <v-divider></v-divider>
+                                        <v-simple-table fixed-header height="100px">
+                                            <template v-slot:default>
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-left">
+                                                            Temperature
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Humidity
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Light Intensity
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Soil Moisture
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="sensor in sensordata" :key="sensor.humidity">
+                                                        <td>{{ sensor.temperature }}</td>
+                                                        <td>{{ sensor.humidity }}</td>
+                                                        <td>{{ sensor.light_intensity }}</td>
+                                                        <td>{{ sensor.soil_moisture }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </template>
+                                        </v-simple-table>
+                                    </div>
+                                </div>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="5">
+                            <v-card min-height="50vh" rounded="lg">
+                                <v-container>
+                                    <div v-for="sensor in sensordata" :key="sensor.humidity">
+                                        <v-list-item v-for="item in dataretvi" :key="item.humidity">
+                                            <v-list-item-content>
+                                                <h4>Status in Your Agriculture Land</h4>
+                                                <v-list-item-title>
+                                                    <div v-if="parseInt(sensor.light_intensity) < parseInt(item.light_intensity)">
+                                                        <v-icon color="yellow darken-2" x-large>mdi-lightbulb
+                                                        </v-icon>
+                                                        Status : Light is On
+                                                    </div>
+                                                    <div v-else-if="parseInt(sensor.light_intensity) > parseInt(item.light_intensity)">
+                                                        <v-icon x-large>mdi-lightbulb</v-icon>
+                                                        Status : Light is Off
+                                                    </div>
+                                                    <v-divider></v-divider>
+                                                </v-list-item-title>
+                                                <v-list-item-title>
+                                                    <div v-if="parseInt(sensor.temperature) > parseInt(item.temperature)">
+                                                        <v-icon color="yellow darken-2" x-large>mdi-fan</v-icon>
+                                                        Status : Fan is On
+                                                    </div>
+                                                    <div v-else-if="parseInt(sensor.temperature) < parseInt(item.temperature)">
+                                                        <v-icon x-large>mdi-fan</v-icon>
+                                                        Status : Fan is Off
+                                                    </div>
+                                                    <v-divider></v-divider>
+                                                </v-list-item-title>
+                                                <v-list-item-title>
+                                                    <div v-if="parseInt(sensor.humidity)  <  parseInt(item.humidity) ">
+                                                        <v-icon color="yellow darken-2" x-large>mdi-spray</v-icon>
+                                                        Status : Humidity Spary is On
+                                                    </div>
+                                                    <div v-else-if="parseInt(sensor.humidity) > parseInt(item.humidity)">
+                                                        <v-icon x-large>mdi-spray</v-icon>
+                                                        Status : Humidity Spary is Off
+                                                    </div>
+                                                    <v-divider></v-divider>
+                                                </v-list-item-title>
+                                                <v-list-item-title>
+                                                    <div v-if="parseInt(sensor.soil_moisture) > parseInt(item.soil_moisture)">
+                                                        <v-icon x-large>mdi-power-socket</v-icon>
+                                                        Status : Motor is Off
+                                                    </div>
+                                                    <div v-else-if="parseInt(sensor.soil_moisture) < parseInt(item.soil_moisture)">
+                                                        <v-icon color="yellow darken-2" x-large>mdi-power-socket
+                                                        </v-icon>
+                                                        Status : Motor is On
+                                                    </div>
+                                                    <v-divider></v-divider>
+                                                </v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </div>
+                                </v-container>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-firestore.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.3/dist/vuetify.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data: () => ({
+                croplist: ['Tomato', 'Cucumber', 'Strawberry', 'Capsicum', 'Rose'],
+                crop: '',
+                dataretvi: [],
+                sensordata: []
+            }),
+            methods: {
+                dataret() {
+                    let state = 'crop_data';
+                    let crop = this.$refs.refcrop.value;
+                    this.dataretvi = [];
+                    this.sensordata = [];
+                    var docRef = db.collection(state).doc(crop);
+                    var sensorval = db.collection(state).doc("sensor_data");
+                    /* */
+                    sensorval.get().then((doc) => {
+                        if (doc.exists) {
+                            this.sensordata.push(doc.data());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Something went wrong!'
+                            })
+                        }
+                    }).catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error
+                        })
+                    });
+                    docRef.get().then((doc) => {
+                        if (doc.exists) {
+                            this.dataretvi.push(doc.data());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Something went wrong!'
+                            })
+                        }
+                    }).catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error
+                        })
+                    });
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
